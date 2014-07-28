@@ -1,0 +1,259 @@
+%ANGULO GAMMA
+
+%Para el modelo de paso derecho calculamos los puntos de las dos piernas
+P4_der = der(:,10:12);
+P5_der = der(:,13:15);
+P12_der = der(:,34:36);
+P18_der = der(:,52:54);
+V1218_der = P12_der - P18_der;
+V54_der = P5_der - P4_der;
+
+P22_der = der(:,64:66);
+P23_der = der(:,67:69);
+P12_der = der(:,34:36);
+P18_der = der(:,52:54);
+V1218_der = P12_der - P18_der;
+V2322_der = P23_der - P22_der;
+
+%Para el modelo de paso derecho calculamos los valores del angulo
+for i=1:1:100
+    cogamma_der1(i)=(V1218_der(i,1)*V54_der(i,1)+V1218_der(i,2)*V54_der(i,2)+V1218_der(i,3)*V54_der(i,3))/(sqrt(V1218_der(i,1)^2+V1218_der(i,2)^2+V1218_der(i,3)^2)*sqrt(V54_der(i,1)^2+V54_der(i,2)^2+V54_der(i,3)^2));
+    gamma_der1(i)=acos(cogamma_der1(i))*(180/pi);
+end
+
+for j=1:1:100
+    cogamma_der2(j)=(V1218_der(j,1)*V2322_der(j,1)+V1218_der(j,2)*V2322_der(j,2)+V1218_der(j,3)*V2322_der(j,3))/(sqrt(V1218_der(j,1)^2+V1218_der(j,2)^2+V1218_der(j,3)^2)*sqrt(V2322_der(j,1)^2+V2322_der(j,2)^2+V2322_der(j,3)^2));
+    gamma_der2(j)=acos(cogamma_der2(j))*(180/pi);
+end
+
+%Para el modelo de paso derecho calculamos los puntos de las dos piernas
+P4_izq = izq(:,10:12);
+P5_izq = izq(:,13:15);
+P12_izq = izq(:,34:36);
+P18_izq = izq(:,52:54);
+V1218_izq = P12_izq - P18_izq;
+V54_izq = P5_izq - P4_izq;
+
+P22_izq = izq(:,64:66);
+P23_izq = izq(:,67:69);
+P12_izq = izq(:,34:36);
+P18_izq = izq(:,52:54);
+V1218_izq = P12_izq - P18_izq;
+V2322_izq = P23_izq - P22_izq;
+
+%Para el modelo de paso izquierdo calculamos los valores del angulo
+for i=1:1:100
+    cogamma_izq1(i)=(V1218_izq(i,1)*V54_izq(i,1)+V1218_izq(i,2)*V54_izq(i,2)+V1218_izq(i,3)*V54_izq(i,3))/(sqrt(V1218_izq(i,1)^2+V1218_izq(i,2)^2+V1218_izq(i,3)^2)*sqrt(V54_izq(i,1)^2+V54_izq(i,2)^2+V54_izq(i,3)^2));
+    gamma_izq1(i)=acos(cogamma_izq1(i))*(180/pi);
+end
+
+for j=1:1:100
+    cogamma_izq2(j)=(V1218_izq(j,1)*V2322_izq(j,1)+V1218_izq(j,2)*V2322_izq(j,2)+V1218_izq(j,3)*V2322_izq(j,3))/(sqrt(V1218_izq(j,1)^2+V1218_izq(j,2)^2+V1218_izq(j,3)^2)*sqrt(V2322_izq(j,1)^2+V2322_izq(j,2)^2+V2322_izq(j,3)^2));
+    gamma_izq2(j)=acos(cogamma_izq2(j))*(180/pi);
+end
+
+%Representamos los valores del angulo para ambos modelos
+figure(3)
+subplot(2,2,1);
+plot(gamma_der1,'b');
+hold on;
+plot(gamma_der2,'g');
+title('Modelo de pierna derecha, gamma1 y gamma2');
+
+subplot(2,2,2);
+plot(gamma_izq1,'r');
+hold on;
+plot(gamma_izq2,'y');
+title('Modelo de pierna izquierda, gamma1 y gamma2');
+
+subplot(2,2,3);
+plot(gamma_der1,'b');
+hold on;
+plot(gamma_izq1,'r');
+hold on;
+title('Ambos modelos, gamma1');
+
+subplot(2,2,4);
+plot(gamma_der2,'g');
+hold on;
+plot(gamma_izq2,'y');
+title('Ambos modelos, gamma2');
+
+%Calculamos la funcion de asimetria
+
+mostrar = 1;
+
+while (mostrar == 1)
+    
+    opcion = input('Seleccione la función de asimetría que desea calcular (de 1 a 6): ');
+    
+    switch opcion
+        
+        case 1, 
+            for i=1:1:100
+              if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+              else
+                coas1(i)=(gamma_izq1(i)-gamma_der1(i));
+              end
+            end
+
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=(gamma_izq2(i)-gamma_der2(i));
+              end
+            end
+            
+        case 2,
+            for i=1:1:100
+              if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+              else
+                coas1(i)=(gamma_izq1(i)-gamma_der1(i))/(gamma_izq1(i)+gamma_der1(i));
+                coas1(i)=coas1(i)*100;
+              end
+            end
+
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=(gamma_izq2(i)-gamma_der2(i))/(gamma_izq2(i)+gamma_der2(i));
+                coas2(i)=coas2(i)*100;
+              end
+            end
+            
+        case 3,
+            for i=1:1:100
+              if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+              else
+                coas1(i)=abs((gamma_der1(i)/gamma_izq1(i))-(gamma_izq1(i)/gamma_der1(i)));
+                coas1(i)=coas1(i)*100;
+              end
+            end
+            
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=abs((gamma_der2(i)/gamma_der2(i))-(gamma_izq2(i)/gamma_der2(i)));
+                coas2(i)=coas2(i)*100;
+              end
+            end
+        
+        case 4,
+            for i=1:1:100
+              if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+              else
+                coas1(i)=(gamma_der1(i)/gamma_izq1(i))+(gamma_izq1(i)/gamma_der1(i))-2;
+                coas1(i)=coas1(i)*100;
+              end
+            end
+            
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=(gamma_der2(i)/gamma_izq2(i))+(gamma_izq2(i)/gamma_der2(i))-2;
+                coas2(i)=coas2(i)*100;
+              end
+            end
+            
+        case 5,
+            for i=1:1:100
+              if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+              else
+                coas1(i)=(gamma_der1(i)-gamma_izq1(i))/max(gamma_der1(i),gamma_izq1(i));
+                coas1(i)=coas1(i)*100;
+              end
+            end
+            
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=(gamma_der2(i)-gamma_izq2(i))/max(gamma_der2(i),gamma_izq2(i));
+                coas2(i)=coas2(i)*100;
+              end
+            end
+            
+        case 6,
+          for i=1:1:100
+            if(abs(gamma_izq1(i)-gamma_der1(i))<2)
+                coas1(i)=0;
+            else
+                coas1(i)=abs((gamma_der1(i)-gamma_izq1(i))/max(gamma_der1(i),gamma_izq1(i)));
+                coas1(i)=coas1(i)*100;
+            end
+          end
+            
+            for i=1:1:100
+              if(abs(gamma_izq2(i)-gamma_der2(i))<2)
+                coas2(i)=0;
+              else
+                coas2(i)=abs((gamma_der2(i)-gamma_izq2(i))/max(gamma_der2(i),gamma_izq2(i)));
+                coas2(i)=coas2(i)*100;
+              end
+            end  
+            
+        case 0,
+            mostrar = 0;
+            Menu;
+            
+        otherwise,
+            disp ('Opción incorrecta ')
+            for i=1:1:100
+                coas1(i)=0;
+                coas2(i)=0;
+            end
+
+    end
+    
+    %Calculamos el coeficiente de asimetria
+    media1=mean(coas1);
+    media2=mean(coas2);
+    for i=1:1:100
+        resultado1(i)=(coas1(i)-media1)^2;
+        resultado2(i)=(coas2(i)-media2)^2;
+    end
+   
+    coeficiente1=sqrt(mean(resultado1));
+    coeficiente2=sqrt(mean(resultado2));
+    
+    %Representamos el coeficiente de asimetria
+    disp(' ');
+    disp('El coeficiente de asimetría para la primera pierna es: ');disp(coeficiente1);
+    disp(' ');
+    disp('El coeficiente de asimetría para la segunda pierna es: ');disp(coeficiente2);
+    
+    %Representamos la funcion de asimetria
+    if (opcion==1)
+        figure(4)
+        subplot(2,1,1);
+        plot(coas1,'b');
+        title('Función de asimetría entre ambos modelos - Primera pierna')
+        ylabel('Valor en º');
+    
+        subplot(2,1,2);
+        plot(coas2,'g');
+        title('Función de asimetría entre ambos modelos - Segunda pierna');
+        ylabel('Valor en º');
+    else
+        figure(4)
+        subplot(2,1,1);
+        plot(coas1,'b');
+        title('Función de asimetría entre ambos modelos - Primera pierna')
+        ylabel('Valor en %');
+    
+        subplot(2,1,2);
+        plot(coas2,'g');
+        title('Función de asimetría entre ambos modelos - Segunda pierna');
+        ylabel('Valor en %');
+    end
+    
+end
